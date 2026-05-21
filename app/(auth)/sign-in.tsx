@@ -74,6 +74,7 @@ export default function SignIn() {
       });
       posthog.identify(emailAddress, {
         $set: { email: emailAddress },
+        $set_once: { first_sign_in_date: new Date().toISOString() },
       });
       posthog.capture("user_signed_in", { method: "mfa_email_code" });
     }

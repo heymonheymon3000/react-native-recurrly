@@ -61,7 +61,8 @@ const Subscriptions = () => {
       return (
         sub.name?.toLowerCase().includes(q) ||
         sub.category?.toLowerCase().includes(q) ||
-        sub.plan?.toLowerCase().includes(q)
+        sub.plan?.toLowerCase().includes(q) ||
+        sub.billing?.toLowerCase().includes(q)
       );
     });
   }, [query, subscriptions]);

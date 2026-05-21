@@ -1,6 +1,6 @@
 ---
 title: PostHog Setup - Conclusion
-description: Review and fix any errors in the PostHog integration implementation
+description: Finalize the PostHog integration by building dashboards and insights, validating instrumented events, and completing the setup report and documentation sign-off
 ---
 
 Use the PostHog MCP to create a new dashboard named "Analytics basics" based on the events created here. Make sure to use the exact same event names as implemented in the code. Populate it with up to five insights, with special emphasis on things like conversion funnels, churn events, and other business critical insights.  

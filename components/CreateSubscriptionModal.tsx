@@ -97,7 +97,9 @@ const CreateSubscriptionModal = ({
 
     onCreate(subscription);
     posthog.capture("subscription_created", {
-      subscription_name: name.trim()
+      subscription_name_redacted: true,
+      subscription_name_category: category,
+      subscription_billing: frequency,
     });
 
     resetForm();

@@ -99,7 +99,8 @@ export default function App() {
               posthog.capture(
                 isExpanding ? "subscription_expanded" : "subscription_collapsed",
                 {
-                  subscription_name: item.name,
+                  subscription_id: item.id,
+                  subscription_name_redacted: true,
                   subscription_category: item.category,
                   subscription_billing: item.billing,
                 },

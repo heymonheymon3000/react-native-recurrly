@@ -72,10 +72,15 @@ const Settings = () => {
 
       <Pressable
         className="auth-button"
-        onPress={() => {
+        onPress={async () => {
           posthog.capture("user_signed_out");
-          posthog.reset();
-          signOut();
+          try {
+            await signOut();
+            await posthog.flush();
+            posthog.reset();
+          } catch (error) {
+            console.error("Sign out failed:", error);
+          }
         }}
       >
         <Text className="auth-button-text">Sign out</Text>

@@ -24,7 +24,7 @@ A React Native Expo app demonstrating PostHog product analytics integration with
 
 ## Project Structure
 
-```
+```text
 basics/expo/
 ├── app/                          # Expo Router screens (file-based routing)
 │   ├── _layout.tsx               # Root layout with PostHogProvider + AuthProvider
@@ -109,7 +109,7 @@ npx expo run:android
 
 ### Configuration
 
-PostHog is configured in `src/config/posthog.ts` using environment variables from `app.json`:
+PostHog is configured in `src/config/posthog.ts` using environment variables from `app.config.js` (exposed via `expoConfig.extra`):
 
 ```typescript
 import Constants from 'expo-constants'
@@ -248,7 +248,7 @@ POSTHOG_HOST=https://us.i.posthog.com
 
 ## .npmrc
 
-```
+```ini
 legacy-peer-deps=true
 
 ```
@@ -1187,7 +1187,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }
 
   return (
-    <AuthContext
+    <AuthContext.Provider
       value={{
         user,
         isLoading,
@@ -1197,7 +1197,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }}
     >
       {children}
-    </AuthContext>
+    </AuthContext.Provider>
   )
 }
 
