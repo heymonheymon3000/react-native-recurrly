@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { icons } from "@/constants/icons";
+import {posthog} from "@/src/config/posthog";
 
 type Frequency = "Monthly" | "Yearly";
 
@@ -95,6 +96,10 @@ const CreateSubscriptionModal = ({
     };
 
     onCreate(subscription);
+    posthog.capture("subscription_created", {
+      subscription_name: name.trim()
+    });
+
     resetForm();
     onClose();
   };
