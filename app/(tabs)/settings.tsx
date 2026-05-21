@@ -4,6 +4,7 @@ import { styled } from "nativewind";
 import React from "react";
 import { Image, Pressable, Text, View } from "react-native";
 import { SafeAreaView as RNSafeAreaView } from "react-native-safe-area-context";
+import { usePostHog } from "posthog-react-native";
 
 const SafeAreaView = styled(RNSafeAreaView);
 
@@ -13,6 +14,7 @@ const truncateId = (id: string) =>
 const Settings = () => {
   const { signOut } = useClerk();
   const { user, isLoaded } = useUser();
+  const posthog = usePostHog();
 
   if (!isLoaded || !user) return null;
 
@@ -68,7 +70,14 @@ const Settings = () => {
         </View>
       </View>
 
-      <Pressable className="auth-button" onPress={() => signOut()}>
+      <Pressable
+        className="auth-button"
+        onPress={() => {
+          posthog.capture("user_signed_out");
+          posthog.reset();
+          signOut();
+        }}
+      >
         <Text className="auth-button-text">Sign out</Text>
       </Pressable>
     </SafeAreaView>

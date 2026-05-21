@@ -16,6 +16,7 @@ import UpcomingSubscriptionCard from "@/components/UpcomingSubscriptionCard";
 import SubscriptionCard from "@/components/SubscriptionCard";
 import { useState } from "react";
 import { useUser } from "@clerk/expo";
+import { usePostHog } from "posthog-react-native";
 
 const SafeAreaView = styled(RNSafeAreaView);
 
@@ -24,6 +25,7 @@ export default function App() {
     string | null
   >(null);
   const { user } = useUser();
+  const posthog = usePostHog();
 
   const displayName = user?.fullName ?? "Welcome";
   const avatarUri = user?.imageUrl;
@@ -84,11 +86,20 @@ export default function App() {
           <SubscriptionCard
             {...item}
             expanded={expandedSubscriptionId === item.id}
-            onPress={() =>
+            onPress={() => {
+              const isExpanding = expandedSubscriptionId !== item.id;
               setExpandedSubscriptionId((currentId) =>
                 currentId === item.id ? null : item.id,
-              )
-            }
+              );
+              posthog.capture(
+                isExpanding ? "subscription_expanded" : "subscription_collapsed",
+                {
+                  subscription_name: item.name,
+                  subscription_category: item.category,
+                  subscription_billing: item.billing,
+                },
+              );
+            }}
           />
         )}
         keyExtractor={(item) => item.id?.toString() ?? item.name}

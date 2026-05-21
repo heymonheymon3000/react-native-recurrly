@@ -13,12 +13,14 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView as RNSafeAreaView } from "react-native-safe-area-context";
+import { usePostHog } from "posthog-react-native";
 
 const SafeAreaView = styled(RNSafeAreaView);
 
 export default function SignIn() {
   const { signIn, errors, fetchStatus } = useSignIn();
   const router = useRouter();
+  const posthog = usePostHog();
 
   const [emailAddress, setEmailAddress] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -26,7 +28,13 @@ export default function SignIn() {
 
   const handleSubmit = async () => {
     const { error } = await signIn.password({ emailAddress, password });
-    if (error) return;
+    if (error) {
+      posthog.capture("user_sign_in_failed", {
+        error_message: error.message,
+        error_code: error.code,
+      });
+      return;
+    }
 
     if (signIn.status === "complete") {
       await signIn.finalize({
@@ -36,6 +44,11 @@ export default function SignIn() {
           router.push(url as Href);
         },
       });
+      posthog.identify(emailAddress, {
+        $set: { email: emailAddress },
+        $set_once: { first_sign_in_date: new Date().toISOString() },
+      });
+      posthog.capture("user_signed_in", { method: "password" });
     } else if (
       signIn.status === "needs_client_trust" ||
       signIn.status === "needs_second_factor"
@@ -59,6 +72,10 @@ export default function SignIn() {
           router.push(url as Href);
         },
       });
+      posthog.identify(emailAddress, {
+        $set: { email: emailAddress },
+      });
+      posthog.capture("user_signed_in", { method: "mfa_email_code" });
     }
   };
 

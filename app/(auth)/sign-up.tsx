@@ -13,12 +13,14 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView as RNSafeAreaView } from "react-native-safe-area-context";
+import { usePostHog } from "posthog-react-native";
 
 const SafeAreaView = styled(RNSafeAreaView);
 
 export default function SignUp() {
   const { signUp, errors, fetchStatus } = useSignUp();
   const router = useRouter();
+  const posthog = usePostHog();
 
   const [emailAddress, setEmailAddress] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -27,6 +29,7 @@ export default function SignUp() {
   const handleSubmit = async () => {
     const { error } = await signUp.password({ emailAddress, password });
     if (error) return;
+    posthog.capture("user_sign_up_started", { method: "email_password" });
     await signUp.verifications.sendEmailCode();
   };
 
@@ -40,6 +43,11 @@ export default function SignUp() {
           router.push(url as Href);
         },
       });
+      posthog.identify(emailAddress, {
+        $set: { email: emailAddress },
+        $set_once: { sign_up_date: new Date().toISOString() },
+      });
+      posthog.capture("user_signed_up", { method: "email_password" });
     }
   };
 
